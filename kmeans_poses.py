@@ -8,12 +8,12 @@ import json
 import os
 
 # LOAD DATA
-with open(r'C:\Users\ngane\Dropbox\2025_UCLA\DESMA-252A_Coding-Arts\Project 1\2025-1005_Text\2_Gesture-Processing\POSE_CLUSTERS\AOSC211_met-metadata.json', encoding='utf-8') as f_raw:
+with open('AOSC211_met-metadata.json', encoding='utf-8') as f_raw:
     raw_data = json.load(f_raw)
-with open(r'C:\Users\ngane\Dropbox\2025_UCLA\DESMA-252A_Coding-Arts\Project 1\2025-1005_Text\2_Gesture-Processing\POSE_CLUSTERS\AOSC211_mask-metadata.json', encoding='utf-8') as f_crop:
+with open('AOSC211_mask-metadata.json', encoding='utf-8') as f_crop:
     crop_data = json.load(f_crop)
 
-img_dir = r'C:\Users\ngane\Dropbox\2025_UCLA\DESMA-252A_Coding-Arts\Project 1\2025-1005_Text\2_Gesture-Processing\POSE_CLUSTERS\00_RAW'
+img_dir = '\POSE_CLUSTERS\00_RAW'
 
 # FILTER OUT HEADS AND BUSTS
 raw_ids = {str(obj['objectID']): obj for obj in raw_data}
@@ -401,3 +401,4 @@ for cluster_id in range(K):
 plt.tight_layout()
 plt.savefig('8_K7_cluster_rows.png', dpi=300, facecolor='black')
 plt.show()
+
