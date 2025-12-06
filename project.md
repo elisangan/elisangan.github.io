@@ -85,7 +85,7 @@ The vertical weight distribution translates into the vertical center of gravity,
 
 ## Data Processing
 
-A personal data platform integrating Meta's SAM vit-b was used to perform the image segmentation. 
+A custom data platform integrating Meta's SAM vit-b, built by the author for this project, was used to perform the image segmentation. 
 The 377 images were first processed as a batch to produce binary masks.
 Connectivity and area metrics were then used to automatically identify whether an image was background or figure.
 These masks were reviewed to ensure that they correctly captured the underlying figure.
@@ -103,7 +103,7 @@ The bounding box was also used to crop the images down with 5% padding in order 
 ## K-Means Implementation
 
 Each object was plotted on a grid with its `aspect ratio` as its x-coordinate and `cog y` as its y-coordinate.
-The normalized values of each feature was then normalized from 0 to 1 and plotted again to check for distortions in transformation.
+The values of each feature was then normalized from 0 to 1 and plotted again to check for distortions in transformation.
 Values for center of gravity were narrow, so plots used the min and max extents in order to view the datapoints more clearly.<p>
 
 <img width="4800" height="2400" alt="0_1_unscaled_scaled_aspect_ratio_cog_y" src="https://github.com/user-attachments/assets/fa98af73-41f4-45aa-bb76-13861afba25a" />
@@ -123,17 +123,17 @@ When K equaled 3, all three poses were successfully grouped together, with the o
 As cluster 1 containing standing sculptures moved across the x-axis and aspect ratios got wider, more sitting figures started to be included, demonstrating that the intent of `cog_y` and the vertical weight distribution was working exactly as intended.
 
 <img width="7200" height="2400" alt="6_K-Means-Comparisons-1" src="https://github.com/user-attachments/assets/3200a0b3-5c8b-4ae6-8844-95b66729007d" />
-<img width="7200" height="1125" alt="8_K3_cluster_rows" src="https://github.com/user-attachments/assets/dbce681c-c443-4a99-9ae8-3734ab05e86b" />
+<img width="7200" height="1125" alt="8_K3_cluster_rows" src="https://github.com/user-attachments/assets/dbce681c-c443-4a99-9ae8-3734ab05e86b" /><p>
 
 
 Increasing cluster size successfully resulted in clusters with more nuance in shapes. 
 Shown below are sculpture assignments at different values for k.
 Nuanced but clear differences in shapes are visible between groups illustrating the success of the features engineered for this k-means classification.
 
-<img width="7200" height="2400" alt="6_K-Means-Comparisons-2" src="https://github.com/user-attachments/assets/e16f1d55-d9c2-486f-8a69-9ad5dc9f3e34" />
+<img width="7200" height="4800" alt="6_K-Means-Comparisons-2" src="https://github.com/user-attachments/assets/e16f1d55-d9c2-486f-8a69-9ad5dc9f3e34" />
 <img width="7200" height="2250" alt="8_K6_cluster_rows" src="https://github.com/user-attachments/assets/961f176b-c38e-41c0-bfe8-c2c424517c1e" />
 <img width="7200" height="2625" alt="8_K7_cluster_rows" src="https://github.com/user-attachments/assets/d9d03cb8-d994-4def-8e71-1f494b854646" />
-<img width="7200" height="3000" alt="8_K8_cluster_rows" src="https://github.com/user-attachments/assets/5979ae49-9f06-4fe7-8adc-29dc68d4948a" />
+<img width="7200" height="3000" alt="8_K8_cluster_rows" src="https://github.com/user-attachments/assets/5979ae49-9f06-4fe7-8adc-29dc68d4948a" /><p>
 
 
 That the aspect ratio and vertical weight distribution is able to capture and classify the range of Buddha sculptures in perceptibly clear ways illustrates the regularity and consistency of Buddhist art iconography.
