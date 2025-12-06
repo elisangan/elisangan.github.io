@@ -1,67 +1,170 @@
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+# The Shapes of Buddha
 
-## My Project
+Elisa Ngan <br>
+Design Media Arts MFA <p>
 
-I applied machine learning techniques to investigate... Below is my report.
+Dr. Alexander Lozinski <br>
+Atmospheric & Oceanic Sciences C204, Fall 2025 <p>
 
-***
+## Introduction
 
-## Introduction 
+Buddhist art describe the life of the Buddha and the cast of characters surrounding him.
+In its communicative role, Buddhist art artifacts exhibit iconographic consistency such that followers can recognize scenes, identify characters, and understand thematic ideas. 
+The Buddha for example can be identified through his long earlobes, the curls of his hair, and his flowing robe. 
+The consistency and longitudinal continuity of features across Buddhist art artifacts makes it a particularly promising area in which to apply machine learning techniques.
+This paper explores the potential of these machine learning techniques by applying the K-means algorithm to cluster and identify common poses found in Cambodian Buddhist sculptures.
 
-Here is a summary description of the topic. Here is the problem. This is why the problem is important.
+## Data Collection & Exploration
 
-There is some dataset that we can use to help solve this problem. This allows a machine learning approach. This is how I will solve the problem using supervised/unsupervised/reinforcement/etc. machine learning.
+The dataset was collected from the Metropolitan Museum of Art through their API after exploring the search results displayed on its website.
+Search terms used to capture the full idea of "Cambodian Buddhist sculptures" included "Cambodia," "Buddhist Sculptures," "Khmer," and "Angkor."
+The website was scraped with the SCRAPY library in order to obtain the `object_id` of target artifacts retrieved through the search terms. 
+`object_id` scraped from the website was then used to pull matching images and all related metadata from the API. 
+A total of 576 objects representing the full union of the search terms was downloaded onto a machine to be processed locally.
 
-We did this to solve the problem. We concluded that...
+Exploration of the images confirmed that there were patterns to the poses of the figures. 
+The most immediately evident Buddha poses were: 1) standing, 2) sitting, and 3) reclining.
+However, while the base class of the dataset had been limited to sculptures, there were other unexpected objects that were included such as architectural elements.
+Refining the dataset further to include only single figures that could be rotated 360-degrees required excluding additional object types and tags.
+After filtering further through the metadata structure, the dataset was culled to 309 objects.
+The table below describes the running total of the dataset from download to final.
 
-## Data
+  | Stage | Description            | Count | Removed | Filter Details                    |
+  |-------|------------------------|-------|---------|-----------------------------------|
+  | 0     | Raw Download (Met API) | 576   | —       | Sculpture Classification query    |
+  | 1     | Image Processing       | 539   | 37      | Missing images                    |
+  | 2     | Object Type Filter     | 381   | 158     | 54 excluded object types          |
+  | 3     | Tag Filter             | 377   | 4       | 26 excluded tags                  |
+  | 4     | Fragment Filter        | 309   | 85      | 7 excluded tags                   |
+  | Final | Filtered Dataset       | 292   |         |                                   |
 
-Here is an overview of the dataset, how it was obtained and the preprocessing steps taken, with some plots!
+> <b>Excluded Object Types</b><br>
+> * Architectural elements and reliefs (Altarpiece, Antefix, Architectural element, Architectural
+   relief, Column, Frieze section, Lintel, Pedestal, Pillar fragment, Relief, Relief Panel,
+  Relief fragment, Relief panel, Stair riser)
+> * Religious/ritual objects (Buddhist triad, Censer, Linga, Reliquary, Rondel, Shrine, Shrine panel, Stele, Stele and base, Stele
+  fragment, Stele section, Stupa, Stupa model, Votive plaque, Votive tablet)
+> * Decorative elements (Crown section, Finial, Finial and chime, Garland holder, Pagoda, Pagoda base, Roof
+  finial, Tile)
+> * Functional objects (Container, Dagger, Mold, Mold and impression, Palanquin
+  ring, Plaque, Plaques, Rock crystal, Sealing)
+> * Fragment objects (Head, Fragment, Bust, Hand, Sculpture fragment, Bust fragment, Hands)
+> * Other categories (Base of stele, Drum slab, Figures, Group, Relic, Temple model).
 
-![](assets/IMG/datapenguin.png){: width="500" }
+ > <b>Excluded Tags</b><p>
+ > Antefix, Architectural Element, Column, Dagger, Fragment, Frieze, Garland Holder, Incense
+  Burner, Linga, Lintel, Lions, Model, Pagoda, Panel, Pilaster, Pillar, Plaque, Relief,
+  Reliquary, Ring, Rondel, Stair Riser, Stele, Stupas, Tablet, Tile
 
-*Figure 1: Here is a caption for my diagram. This one shows a pengiun [1].*
+After filtering the dataset to the desired objects representing "Cambodian Buddhist Sculptures," the metadata downloaded from the API was explored to understand what features could be used to classify poses in Euclidean space.
+It was clear that the Met did not think of these images as images since the schema primarily described the sculptures.
+Features would have to be engineered.
 
-## Modelling
+## Feature Engineering
+Aspect ratio and vertical weight distribution were designed for use in the K-means algorithm based on the hypothesis that they would be useful for pose classification.
 
-Here are some more details about the machine learning approach, and why this was deemed appropriate for the dataset. 
+### Data Cleaning
+The images were photographed in inconsistent and heterogeneous ways. This creates noise since the distance between the figure and the camera was not consistent and normalized along the z-axis.
+In order to resolve this problem, the figure was isolated from the background such that the extents of the figure can represent pose more closely without extraneous information.
+Understanding what the figure is in the image requires the grid of pixels in the image itself to be classified as either figure / not-figure or background / not-background.
+In order to do this, a computer vision technique called image segmentation was used where pixels are assigned and grouped into segments to produce binary masks.
+White pixels in the mask are part of the figure / background representation while black pixels are not.
+Since one binary mask represents the background and another binary mask represents the figure and both correspond in coordinate space, the background can be separated from the figure such that the figure can be isolated for further data extraction. 
 
-<p>
-When \(a \ne 0\), there are two solutions to \(ax^2 + bx + c = 0\) and they are
-  \[x = {-b \pm \sqrt{b^2-4ac} \over 2a}.\]
-</p>
+### Aspect Ratio
+The extents of the white pixels in the binary mask representing the figure was used to extract the `height` and `width` of the image in order to calculate its `aspect ratio`.
+The width and the height of the figure was hypothesized to be promising for classification because the aspect ratio of the figure can help clearly determine whether the figure is standing or reclining.
+If the figure is taller than wide, then the figure is standing; if the figure is wider than it is tall, then the figure is reclining. 
+However, if the width and height are roughly equal, it might be assumed that the figure is sitting but a close look at the dataset shows that some figures are sitting on pedestals which may vertically elongate the aspect ratio to make it look like they are standing.
 
-The model might involve optimizing some quantity. You can include snippets of code if it is helpful to explain things.
+### Vertical Weight Distribution
+In order to help disambiguate between standing and sitting images, the vertical weight distribution of the figure was calculated.
+Using the binary masks, rows of white pixels along the height of the object were averaged to understand the distribution of white pixels across its height.
+Sitting figures will have a lower vertical weight distribution with more white pixels towards the bottom and less white pixels towards the top.
+The vertical weight distribution translates into the vertical center of gravity, `cog y`, for an image where a lower center of gravity indicate the possibiblity of a sitting pose.
 
-```python
-from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.datasets import make_classification
-X, y = make_classification(n_features=4, random_state=0)
-clf = ExtraTreesClassifier(n_estimators=100, random_state=0)
-clf.fit(X, y)
-clf.predict([[0, 0, 0, 0]])
-```
+## Data Processing
 
-This is how the method was developed.
+A personal data platform integrating Meta's SAM vit-b was used to perform the image segmentation. 
+The 377 images were first processed as a batch to produce binary masks.
+Connectivity and area metrics were then used to automatically identify whether an image was background or figure.
+These masks were reviewed to ensure that they correctly captured the underlying figure.
+If it did not, then -- through pixel-level operations of addition and subtraction -- several masks could be composited from the set that was generated to create a crafted mask.
+If the masks generated in the first pass were of extremely poor quality, then the model's hyperparameters could be turned to re-process the individual image.
 
-## Results
+<b>Mask Generator</b>
+![img.png](img.png)
 
-Figure X shows... [description of Figure X].
+159 figure masks were reviewed to be acceptable representations but 218 figure masks had to be edited and manually crafted.
+After the data was cleaned, bounding boxes were extracted using the extents of the figure mask to extract the final `width` and `height`.
+The bounding box was also used to crop the images down with 5% padding in order to normalize the depth of field by removing / deleting unnecessary background information.
 
-## Discussion
+## K-Means Implementation
 
-From Figure X, one can see that... [interpretation of Figure X].
+Each object was plotted on a grid with its `aspect ratio` as its x-coordinate and `cog y` as its y-coordinate.
+The normalized values of each feature was then normalized from 0 to 1 and plotted again to check for distortions in transformation.
+Values for center of gravity were narrow, so plots used the min and max extents in order to view the datapoints more clearly.<p>
 
-## Conclusion
+![0_1_unscaled_scaled_aspect_ratio_cog_y.png](0_1_unscaled_scaled_aspect_ratio_cog_y.png)
 
-Here is a brief summary. From this work, the following conclusions can be made:
-* first conclusion
-* second conclusion
+Finally, the K-Means algorithm was implemented to cluster the points into groups. 
+Initialized cluster centroids and labels were plotted to confirm that datapoints were being assigned to the centroid labels and mu was converging into the average location of the cluster centroid as expected.
 
-Here is how this work could be developed further in a future project.
+![2_initial_centroids.png](2_initial_centroids.png)
+![3_initial_labels.png](3_initial_labels.png)
+![5A_K-Means-3.png](5A_K-Means-3.png)
 
-## References
-[1] DALL-E 3
+## K-Means Analysis & Verification
 
-[back](./)
+Part of the reason why the K-means algorithm was used for classifying these figures was because the number of common Buddha poses is assumed to be known at three: 1) standing, 2) sitting, and 3) reclining.
+When K equaled 3, all three poses were successfully grouped together, with the one reclining Buddha in its own cluster 2. 123 sitting sculptures were assigned to cluster 0, and 168 sculptures were assigned to cluster 1.
+As cluster 1 containing standing sculptures moved across the x-axis and aspect ratios got wider, more sitting figures started to be included, demonstrating that the intent of `cog_y` and the vertical weight distribution was working exactly as intended.
 
+![6_K-Means-Comparisons-1.png](6_K-Means-Comparisons-1.png)
+![8_K3_cluster_rows.png](8_K3_cluster_rows.png)
+
+Increasing cluster size successfully resulted in clusters with more nuance in shapes. 
+Shown below are sculpture assignments at different values for k.
+Nuanced but clear differences in shapes are visible between groups illustrating the success of the features engineered for this k-means classification.
+
+![6_K-Means-Comparisons-2.png](6_K-Means-Comparisons-2.png)
+![8_K6_cluster_rows.png](8_K6_cluster_rows.png)
+![8_K7_cluster_rows.png](8_K7_cluster_rows.png)
+![8_K8_cluster_rows.png](8_K8_cluster_rows.png)
+
+That the aspect ratio and vertical weight distribution is able to capture and classify the range of Buddha sculptures in perceptibly clear ways illustrates the regularity and consistency of Buddhist art iconography.
+This is quite astounding considering that the earliest / oldest artifact is dated to Year 0 (1st century) and the latest artifact is dated to 1999.
+In total the artifacts in this dataset have been depicting and telling the same story about one man for roughly 2000 years.
+
+| Century | Count |
+|---------|-------|
+| 1st CE  | 17    |
+| 2nd CE  | 2     |
+| 3rd CE  | 6     |
+| 4th CE  | 4     |
+| 5th CE  | 11    |
+| 6th CE  | 19    |
+| 7th CE  | 31    |
+| 8th CE  | 29    |
+| 9th CE  | 28    |
+| 10th CE | 27    |
+| 11th CE | 17    |
+| 12th CE | 28    |
+| 13th CE | 7     |
+| 14th CE | 9     |
+| 15th CE | 14    |
+| 16th CE | 8     |
+| 17th CE | 11    |
+| 18th CE | 12    |
+| 19th CE | 6     |
+| 20th CE | 6     |
+| Total   | 292   |
+
+## Next Steps
+
+The dataset, despite being heavily cleaned, still had stray head fragments.
+Tagging and filtering them out through the custom data platform in the future would result in cleaner and more satisfying results.
+
+Adding to the base dataset by including sculptures from other museums would make this a more comprehensive resource for those interested in learning more about buddhist statues.
+
+Finally, now that the images have been classified, they can be easily labeled and used to train a custom pose classifier that can then be used to predict poses for additional images.
