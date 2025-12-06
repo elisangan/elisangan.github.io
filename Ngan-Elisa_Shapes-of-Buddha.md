@@ -88,7 +88,7 @@ The vertical weight distribution translates into the vertical center of gravity,
 A custom data platform integrating Meta's SAM vit-b, built by the author for this project, was used to perform the image segmentation. 
 The 377 images were first processed as a batch to produce binary masks.
 Connectivity and area metrics were then used to automatically identify whether an image was background or figure.
-These masks were reviewed to ensure that they correctly captured the underlying figure.
+The masks were then reviewed to ensure that they correctly captured the underlying figure.
 If it did not, then -- through pixel-level operations of addition and subtraction -- several masks could be composited from the set that was generated to create a crafted mask.
 If the masks generated in the first pass were of extremely poor quality, then the model's hyperparameters could be turned to re-process the individual image.
 
@@ -97,6 +97,7 @@ If the masks generated in the first pass were of extremely poor quality, then th
 
 
 159 figure masks were reviewed to be acceptable representations but 218 figure masks had to be edited and manually crafted.
+This took an incredibly long time. Halfway through, data dropped and all work was lost.
 After the data was cleaned, bounding boxes were extracted using the extents of the figure mask to extract the final `width` and `height`.
 The bounding box was also used to crop the images down with 5% padding in order to normalize the depth of field by removing / deleting unnecessary background information.
 
@@ -118,17 +119,24 @@ Initialized cluster centroids and labels were plotted to confirm that datapoints
 
 ## K-Means Analysis & Verification
 
-Part of the reason why the K-means algorithm was used for classifying these figures was because the number of common Buddha poses is assumed to be known at three: 1) standing, 2) sitting, and 3) reclining.
-When K equaled 3, all three poses were successfully grouped together, with the one reclining Buddha in its own cluster 2. 123 sitting sculptures were assigned to cluster 0, and 168 sculptures were assigned to cluster 1.
-As cluster 1 containing standing sculptures moved across the x-axis and aspect ratios got wider, more sitting figures started to be included, demonstrating that the intent of `cog_y` and the vertical weight distribution was working exactly as intended.
+The reason why the K-means algorithm was used for classifying these figures was because the number of common Buddha poses is assumed to be known at three: 1) standing, 2) sitting, and 3) reclining.
+When K was set to 3 and the model applied, all three poses were successfully grouped together.
+There were 123 sitting sculptures were assigned to cluster 0, and 168 standing sculptures assigned to cluster 1.
+There was only one reclining Buddha in its own cluster 2.
+The density of the points in each cluster illustrates the iconographic consistency of these poses.
+In order to verify the results more closely, a new plot was created to plot the figures in each cluster in order of their position along the x-axis as the aspect ratios if the figure extent got wider.
+When the three cluster analysis was unpacked, when cluster 1 containing the standing sculptures moved across the x-axis and aspect ratios got wider, more sitting figures started to be included, demonstrating that the intent of `cog_y` and the vertical weight distribution was working exactly as intended.
 
 <img width="7200" height="2400" alt="6_K-Means-Comparisons-1" src="https://github.com/user-attachments/assets/3200a0b3-5c8b-4ae6-8844-95b66729007d" />
 <img width="7200" height="1125" alt="8_K3_cluster_rows" src="https://github.com/user-attachments/assets/dbce681c-c443-4a99-9ae8-3734ab05e86b" /><p>
 
 
-Increasing cluster size successfully resulted in clusters with more nuance in shapes. 
+Increasing cluster size  resulted in clusters with more nuance in shapes. 
 Shown below are sculpture assignments at different values for k.
-Nuanced but clear differences in shapes are visible between groups illustrating the success of the features engineered for this k-means classification.
+The nuanced but clear differences in shapes that can be observed between groups illustrates the success of the features engineered for this k-means classification.
+While each artifact was undoubtedbly unique, different canonical shapes still emerged as different numbers of clusters were initialized.
+Although the initial pose classification goals were to identify the three poses, as K increased beyond three, new patterns emerged that provided more insights about the dataset.
+For example, when more clusters are added, it became clear that sometimes the Buddha sits on the ground, his silouhette creating a sharp equilateral triangle , but at other times the Buddha sits on a slightly sloping pedestal, his silouhette with the pedestal creating a more vertical isoceles triangle. Sometimes individual legs can clearly be seen; othertimes there is the rectangular box created by a flowing robe.
 
 <img width="7200" height="4800" alt="6_K-Means-Comparisons-2" src="https://github.com/user-attachments/assets/e16f1d55-d9c2-486f-8a69-9ad5dc9f3e34" />
 <img width="7200" height="2250" alt="8_K6_cluster_rows" src="https://github.com/user-attachments/assets/961f176b-c38e-41c0-bfe8-c2c424517c1e" />
