@@ -93,7 +93,8 @@ If it did not, then -- through pixel-level operations of addition and subtractio
 If the masks generated in the first pass were of extremely poor quality, then the model's hyperparameters could be turned to re-process the individual image.
 
 <b>Mask Generator</b>
-![img.png](img.png)
+<img width="2560" height="1416" alt="img" src="https://github.com/user-attachments/assets/1ff28de5-8ef3-4cb5-9907-d8ea8e81f6b1" />
+
 
 159 figure masks were reviewed to be acceptable representations but 218 figure masks had to be edited and manually crafted.
 After the data was cleaned, bounding boxes were extracted using the extents of the figure mask to extract the final `width` and `height`.
@@ -105,14 +106,15 @@ Each object was plotted on a grid with its `aspect ratio` as its x-coordinate an
 The normalized values of each feature was then normalized from 0 to 1 and plotted again to check for distortions in transformation.
 Values for center of gravity were narrow, so plots used the min and max extents in order to view the datapoints more clearly.<p>
 
-![0_1_unscaled_scaled_aspect_ratio_cog_y.png](0_1_unscaled_scaled_aspect_ratio_cog_y.png)
+<img width="4800" height="2400" alt="0_1_unscaled_scaled_aspect_ratio_cog_y" src="https://github.com/user-attachments/assets/fa98af73-41f4-45aa-bb76-13861afba25a" />
 
 Finally, the K-Means algorithm was implemented to cluster the points into groups. 
 Initialized cluster centroids and labels were plotted to confirm that datapoints were being assigned to the centroid labels and mu was converging into the average location of the cluster centroid as expected.
 
-![2_initial_centroids.png](2_initial_centroids.png)
-![3_initial_labels.png](3_initial_labels.png)
-![5A_K-Means-3.png](5A_K-Means-3.png)
+<img width="2400" height="2400" alt="2_initial_centroids" src="https://github.com/user-attachments/assets/2a8e0b66-93c4-40d8-adff-f1b0bf024dcb" />
+<img width="2400" height="2400" alt="3_initial_labels" src="https://github.com/user-attachments/assets/062c7e0e-a8ae-4e41-b909-0add3e7ad624" />
+<img width="2400" height="2400" alt="5A_K-Means-3" src="https://github.com/user-attachments/assets/7de4d76a-b490-4516-ba8b-448afbcef8d5" />
+
 
 ## K-Means Analysis & Verification
 
@@ -120,17 +122,19 @@ Part of the reason why the K-means algorithm was used for classifying these figu
 When K equaled 3, all three poses were successfully grouped together, with the one reclining Buddha in its own cluster 2. 123 sitting sculptures were assigned to cluster 0, and 168 sculptures were assigned to cluster 1.
 As cluster 1 containing standing sculptures moved across the x-axis and aspect ratios got wider, more sitting figures started to be included, demonstrating that the intent of `cog_y` and the vertical weight distribution was working exactly as intended.
 
-![6_K-Means-Comparisons-1.png](6_K-Means-Comparisons-1.png)
-![8_K3_cluster_rows.png](8_K3_cluster_rows.png)
+<img width="7200" height="2400" alt="6_K-Means-Comparisons-1" src="https://github.com/user-attachments/assets/3200a0b3-5c8b-4ae6-8844-95b66729007d" />
+<img width="7200" height="1125" alt="8_K3_cluster_rows" src="https://github.com/user-attachments/assets/dbce681c-c443-4a99-9ae8-3734ab05e86b" />
+
 
 Increasing cluster size successfully resulted in clusters with more nuance in shapes. 
 Shown below are sculpture assignments at different values for k.
 Nuanced but clear differences in shapes are visible between groups illustrating the success of the features engineered for this k-means classification.
 
-![6_K-Means-Comparisons-2.png](6_K-Means-Comparisons-2.png)
-![8_K6_cluster_rows.png](8_K6_cluster_rows.png)
-![8_K7_cluster_rows.png](8_K7_cluster_rows.png)
-![8_K8_cluster_rows.png](8_K8_cluster_rows.png)
+<img width="7200" height="2400" alt="6_K-Means-Comparisons-2" src="https://github.com/user-attachments/assets/e16f1d55-d9c2-486f-8a69-9ad5dc9f3e34" />
+<img width="7200" height="2250" alt="8_K6_cluster_rows" src="https://github.com/user-attachments/assets/961f176b-c38e-41c0-bfe8-c2c424517c1e" />
+<img width="7200" height="2625" alt="8_K7_cluster_rows" src="https://github.com/user-attachments/assets/d9d03cb8-d994-4def-8e71-1f494b854646" />
+<img width="7200" height="3000" alt="8_K8_cluster_rows" src="https://github.com/user-attachments/assets/5979ae49-9f06-4fe7-8adc-29dc68d4948a" />
+
 
 That the aspect ratio and vertical weight distribution is able to capture and classify the range of Buddha sculptures in perceptibly clear ways illustrates the regularity and consistency of Buddhist art iconography.
 This is quite astounding considering that the earliest / oldest artifact is dated to Year 0 (1st century) and the latest artifact is dated to 1999.
